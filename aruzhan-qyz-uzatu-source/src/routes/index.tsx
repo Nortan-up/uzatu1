@@ -81,7 +81,17 @@ function InvitationPage() {
     };
   }, []);
 
-  const handleToggleMusic = () => {
+  // Автозапуск по первому клику в любую точку экрана
+  const handleGlobalInteraction = () => {
+    if (!isPlaying && audioRef.current) {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch((e) => console.log("Audio play error:", e));
+    }
+  };
+
+  const handleToggleMusic = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Чтобы клик по кнопке не дублировался
     if (!audioRef.current) return;
     if (isPlaying) {
       audioRef.current.pause();
@@ -94,7 +104,7 @@ function InvitationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-paper-outer sm:py-8">
+    <div className="min-h-screen bg-paper-outer sm:py-8" onClick={handleGlobalInteraction}>
       <main className="paper-surface relative mx-auto min-h-screen w-full max-w-[440px] overflow-x-clip shadow-[0_24px_70px_-24px_rgba(92,72,42,0.18)] sm:rounded-[28px] sm:border sm:border-gold/25">
         {/* Subtle watercolor floral & gold geometry atmosphere */}
         <img
