@@ -12,9 +12,9 @@ import { RsvpForm } from "@/components/RsvpForm";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Аружан — Қыз Ұзату" },
+      { title: "Аружан Қыз Ұзату" },
       { name: "description", content: "Аружанның Қыз Ұзату тойына арналған салтанатты шақыру билеті · 28 қараша 2026" },
-      { property: "og:title", content: "Аружан — Қыз Ұзату" },
+      { property: "og:title", content: "Аружан Қыз Ұзату" },
       { property: "og:description", content: "Аружанның Қыз Ұзату тойына арналған салтанатты шақыру билеті · 28 қараша 2026" },
       { property: "og:image", content: "https://uzatu1.vercel.app/preview.jpg" },
       { property: "og:image:width", content: "1200" },
@@ -70,13 +70,11 @@ function InvitationPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Создаем аудио и сразу подготавливаем для iOS
     const audio = new Audio("/music.mp3");
     audio.loop = true;
     audio.load();
     audioRef.current = audio;
 
-    // Плавный скролл
     const htmlElement = document.documentElement;
     htmlElement.style.scrollBehavior = "smooth";
 
@@ -88,7 +86,6 @@ function InvitationPage() {
       }
     };
 
-    // Слушаем любые возможные действия пользователя на iPhone (касания, клики, скролл)
     window.addEventListener("touchstart", startAudio, { once: true });
     window.addEventListener("click", startAudio, { once: true });
     window.addEventListener("scroll", startAudio, { once: true });
@@ -266,7 +263,7 @@ function InvitationPage() {
         <GoldDivider className="relative z-10 my-2" />
 
         {/* 4. Location + 2GIS Button */}
-        <section className="relative z-10 px6 py-14 text-center">
+        <section className="relative z-10 px-6 py-14 text-center">
           <motion.div {...reveal} className="mx-auto max-w-[330px] space-y-4">
             <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full border border-gold/35 bg-card/80 text-gold-dark">
               <MapPin className="h-5 w-5" />
