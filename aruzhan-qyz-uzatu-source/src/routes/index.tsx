@@ -73,25 +73,35 @@ function InvitationPage() {
     audioRef.current = new Audio("/music.mp3");
     audioRef.current.loop = true;
 
+    // Включаем плавный скролл для всей страницы через стили браузера
+    const htmlElement = document.documentElement;
+    htmlElement.style.scrollBehavior = "smooth";
+
+    const startAudio = () => {
+      if (!isPlaying && audioRef.current) {
+        audioRef.current.play().then(() => {
+          setIsPlaying(true);
+        }).catch((e) => console.log("Audio play error:", e));
+      }
+    };
+
+    // Музыка заиграет при первом клике или первой прокрутке страницы
+    window.addEventListener("click", startAudio, { once: true });
+    window.addEventListener("scroll", startAudio, { once: true });
+
     return () => {
+      htmlElement.style.scrollBehavior = "";
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
+      window.removeEventListener("click", startAudio);
+      window.removeEventListener("scroll", startAudio);
     };
-  }, []);
-
-  // Автозапуск по первому клику в любую точку экрана
-  const handleGlobalInteraction = () => {
-    if (!isPlaying && audioRef.current) {
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch((e) => console.log("Audio play error:", e));
-    }
-  };
+  }, [isPlaying]);
 
   const handleToggleMusic = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Чтобы клик по кнопке не дублировался
+    e.stopPropagation();
     if (!audioRef.current) return;
     if (isPlaying) {
       audioRef.current.pause();
@@ -104,7 +114,7 @@ function InvitationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-paper-outer sm:py-8" onClick={handleGlobalInteraction}>
+    <div className="min-h-screen bg-paper-outer sm:py-8">
       <main className="paper-surface relative mx-auto min-h-screen w-full max-w-[440px] overflow-x-clip shadow-[0_24px_70px_-24px_rgba(92,72,42,0.18)] sm:rounded-[28px] sm:border sm:border-gold/25">
         {/* Subtle watercolor floral & gold geometry atmosphere */}
         <img
