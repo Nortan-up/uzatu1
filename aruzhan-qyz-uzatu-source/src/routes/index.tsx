@@ -70,22 +70,26 @@ function InvitationPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    audioRef.current = new Audio("/music.mp3");
-    audioRef.current.loop = true;
+    // Создаем аудио и сразу подготавливаем для iOS
+    const audio = new Audio("/music.mp3");
+    audio.loop = true;
+    audio.load();
+    audioRef.current = audio;
 
-    // Включаем плавный скролл для всей страницы через стили браузера
+    // Плавный скролл
     const htmlElement = document.documentElement;
     htmlElement.style.scrollBehavior = "smooth";
 
     const startAudio = () => {
-      if (!isPlaying && audioRef.current) {
+      if (audioRef.current && audioRef.current.paused) {
         audioRef.current.play().then(() => {
           setIsPlaying(true);
-        }).catch((e) => console.log("Audio play error:", e));
+        }).catch((e) => console.log("iOS Audio play blocked:", e));
       }
     };
 
-    // Музыка заиграет при первом клике или первой прокрутке страницы
+    // Слушаем любые возможные действия пользователя на iPhone (касания, клики, скролл)
+    window.addEventListener("touchstart", startAudio, { once: true });
     window.addEventListener("click", startAudio, { once: true });
     window.addEventListener("scroll", startAudio, { once: true });
 
@@ -95,10 +99,11 @@ function InvitationPage() {
         audioRef.current.pause();
         audioRef.current = null;
       }
+      window.removeEventListener("touchstart", startAudio);
       window.removeEventListener("click", startAudio);
       window.removeEventListener("scroll", startAudio);
     };
-  }, [isPlaying]);
+  }, []);
 
   const handleToggleMusic = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -261,7 +266,7 @@ function InvitationPage() {
         <GoldDivider className="relative z-10 my-2" />
 
         {/* 4. Location + 2GIS Button */}
-        <section className="relative z-10 px-6 py-14 text-center">
+        <section className="relative z-10 px6 py-14 text-center">
           <motion.div {...reveal} className="mx-auto max-w-[330px] space-y-4">
             <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full border border-gold/35 bg-card/80 text-gold-dark">
               <MapPin className="h-5 w-5" />
