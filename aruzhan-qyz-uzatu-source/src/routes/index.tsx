@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { MapPin, Music, Pause } from "lucide-react";
@@ -8,7 +8,6 @@ import watercolorFlorals from "@/assets/watercolor-florals.jpg";
 import { CalendarCountdown } from "@/components/CalendarCountdown";
 import { GoldDivider, ParallaxSideOrnaments } from "@/components/KazakhOrnaments";
 import { RsvpForm } from "@/components/RsvpForm";
-import { ambientPlayer } from "@/lib/audio";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -68,13 +67,30 @@ function InstagramIcon() {
 
 function InvitationPage() {
   const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    return () => ambientPlayer.stop();
+    audioRef.current = new Audio("/music.mp3");
+    audioRef.current.loop = true;
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
   }, []);
 
   const handleToggleMusic = () => {
-    setIsPlaying(ambientPlayer.toggle());
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch((e) => console.log("Audio play error:", e));
+    }
   };
 
   return (
